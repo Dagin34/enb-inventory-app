@@ -2,16 +2,18 @@
 import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
-// Remove if present: import * as dotenv from 'dotenv';
-// Remove if present: dotenv.config({ path: '.env' }); 
 
-// neonConfig.fetchConnectionCache = true;
+// Enable connection caching for neon-http to prevent "fetch failed" during rapid refreshes
+neonConfig.fetchConnectionCache = true;
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set in Next.js environment');
 }
 
 console.log('DEBUG (Next.js): DATABASE_URL prefix:', process.env.DATABASE_URL.substring(0, 50) + '...');
+
+// Optimization: Some environments need explicit fetch endpoint
+// neonConfig.fetchEndpoint = (host) => `https://${host}/sql`;
 
 const sql = neon(process.env.DATABASE_URL);
 export const db = drizzle(sql, { schema });

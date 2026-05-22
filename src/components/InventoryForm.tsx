@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toast } from 'sonner';
@@ -25,6 +25,7 @@ export default function InventoryForm({
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialData?.imageUrl || null
   );
@@ -173,8 +174,11 @@ export default function InventoryForm({
       setImageFile(null);
       setImagePreview(null);
       
+      
       if (onSuccess) onSuccess();
-      router.refresh();
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error: any) {
       toast.error(error.message || 'System error');
     } finally {

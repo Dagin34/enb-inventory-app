@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toast } from 'sonner';
@@ -16,6 +16,8 @@ import {
   Calendar,
   Layers,
   ArrowRight,
+  LayoutGrid,
+  List,
   MoreVertical
 } from 'lucide-react';
 import {
@@ -41,13 +43,20 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
   const router = useRouter();
 
   const [items, setItems] = useState(initialItems);
+  
+  // Sync state with initialItems when server-side data changes (e.g., after router.refresh())
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
   const [filteredItems, setFilteredItems] = useState(initialItems);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   // Helper function to filter items
   const applyFilters = (
@@ -84,7 +93,7 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
   // Handle search input
   useEffect(() => {
     debouncedSearch(searchQuery);
-  }, [searchQuery]);
+  }, [searchQuery, items, selectedCategory]);
 
   // Handle category filter change
   useEffect(() => {
@@ -111,7 +120,9 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
       setDeletingItemId(null);
 
       toast.success('Item deleted successfully');
-      router.refresh();
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error: any) {
       console.error('Delete error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to delete');
@@ -153,7 +164,7 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
             Back to Collection
           </Button>
           <div className="h-4 w-px bg-neutral-200" />
-          <h2 className="text-xl font-bold font-display">Editing {editingItem.name}</h2>
+          <h2 className="text-xl font-bold font-display text-primary">Editing {editingItem.name}</h2>
         </div>
         <InventoryForm
           initialData={editingItem}
@@ -167,43 +178,65 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
   return (
     <div className="space-y-8">
       {/* Search and Category Toggle */}
-      <div className="flex flex-col md:flex-row gap-4 items-center">
-
-        <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
-          <div className="flex items-center gap-3">
-            <div className="relative group">
-              {/* <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 group-focus-within:text-primary transition-colors" /> */}
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative group flex-1 md:flex-none">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 group-focus-within:text-primary transition-colors" />
               <input
                 type="text"
-                placeholder="Search product..."
-                className="pl-11 pr-6 py-3 bg-white border border-neutral-200 rounded-2xl w-full md:w-64 focus:w-80 transition-all shadow-sm focus:shadow-md"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-11 pr-6 py-3 bg-white border border-neutral-200 rounded-2xl w-full md:w-96 focus:ring-2 focus:ring-primary/10 transition-all shadow-sm outline-none"
               />
             </div>
+            
+            {/* View Toggle */}
+            <div className="flex bg-white border border-neutral-200 rounded-2xl p-1 shadow-sm">
+              <button 
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-primary text-white' : 'text-neutral-400 hover:text-primary'}`}
+              >
+                <LayoutGrid className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-xl transition-all ${viewMode === 'list' ? 'bg-primary text-white' : 'text-neutral-400 hover:text-primary'}`}
+              >
+                <List className="w-5 h-5" />
+              </button>
+            </div>
           </div>
-          {categoryOptions.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => setSelectedCategory(opt.value)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap shadow-sm border ${selectedCategory === opt.value
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-neutral-500 border-neutral-100 hover:border-neutral-300'
-                }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+
+          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar w-full md:w-auto">
+            {categoryOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setSelectedCategory(opt.value)}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap shadow-sm border ${selectedCategory === opt.value
+                    ? 'bg-primary text-white border-primary'
+                    : 'bg-white text-neutral-500 border-neutral-100 hover:border-neutral-300'
+                  }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Grid of items */}
+      {/* Items Container */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-4"}>
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i} className="animate-pulse-slow">
-              <div className="h-48 bg-neutral-100 rounded-2xl mb-4" />
-              <div className="space-y-3">
-                <div className="h-6 bg-neutral-100 rounded w-3/4" />
-                <div className="h-4 bg-neutral-100 rounded w-1/2" />
+              <div className="flex gap-4">
+                <div className="h-24 w-24 bg-neutral-100 rounded-2xl" />
+                <div className="flex-1 space-y-3 py-2">
+                  <div className="h-4 bg-neutral-100 rounded w-3/4" />
+                  <div className="h-4 bg-neutral-100 rounded w-1/2" />
+                </div>
               </div>
             </Card>
           ))}
@@ -211,16 +244,8 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
       ) : filteredItems.length === 0 ? (
         <EmptyState
           icon={<Layers size={48} />}
-          title={
-            items.length === 0
-              ? 'No items available!'
-              : 'No items available!'
-          }
-          description={
-            items.length === 0
-              ? 'Please insert items under this category to see them filtered.'
-              : 'Please insert items under this category to see them filtered.'
-          }
+          title="No items available!"
+          description="Please insert items under this category to see them filtered."
           action={
             items.length !== 0 && (
               <Button variant="secondary" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}>
@@ -232,84 +257,122 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
       ) : (
         <motion.div
           layout
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}
         >
           <AnimatePresence mode="popLayout">
             {filteredItems.map((item) => (
               <motion.div
                 key={item.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               >
-                <Card className="p-0 overflow-hidden flex flex-col group h-full">
-                  {/* Image Container */}
-                  <div className="relative h-56 overflow-hidden bg-neutral-50">
-                    {item.imageUrl ? (
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-neutral-200">
-                        <Package className="w-16 h-16 opacity-10" />
+                {viewMode === 'grid' ? (
+                  <Card className="p-0 overflow-hidden flex flex-col group h-full">
+                    {/* Image Container */}
+                    <div className="relative h-48 overflow-hidden bg-neutral-50">
+                      {item.imageUrl ? (
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-neutral-200">
+                          <Package className="w-12 h-12 opacity-10" />
+                        </div>
+                      )}
+
+                      {/* Badge Overlay */}
+                      <div className="absolute top-3 left-3">
+                        <Badge variant={item.stock > 10 ? 'success' : item.stock > 0 ? 'warning' : 'danger'}>
+                          {item.stock} Available
+                        </Badge>
                       </div>
-                    )}
 
-                    {/* Badge Overlay */}
-                    <div className="absolute top-4 left-4">
-                      <Badge variant={item.stock > 10 ? 'success' : item.stock > 0 ? 'warning' : 'danger'}>
-                        {item.stock.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} Available
-                      </Badge>
+                      <div className="absolute top-3 right-3 flex gap-2 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
+                        <button
+                          onClick={() => setEditingItem(item)}
+                          className="p-1.5 bg-white/90 backdrop-blur shadow-sm rounded-lg hover:bg-white text-primary transition-colors"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeletingItemId(item.id)}
+                          className="p-1.5 bg-white/90 backdrop-blur shadow-sm rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="absolute top-4 right-4 flex gap-2 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-                      <button
-                        onClick={() => setEditingItem(item)}
-                        className="p-2 bg-white/90 backdrop-blur shadow-sm rounded-xl hover:bg-white text-primary transition-colors"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setDeletingItemId(item.id)}
-                        className="p-2 bg-white/90 backdrop-blur shadow-sm rounded-xl hover:bg-red-50 text-red-600 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Content Area */}
-                  <div className="p-6 flex flex-col flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-xl font-bold font-display text-white/80 line-clamp-1 group-hover:text-white transition-colors">
-                        {item.name}
-                      </h3>
-                      <p className="text-lg font-black text-white/40 font-display">
-                        ${Number(item.price).toLocaleString()}
+                    <div className="p-5 flex flex-col flex-1">
+                      <div className="flex justify-between items-start mb-1">
+                        <h3 className="text-lg font-bold font-display text-white/90 line-clamp-1 group-hover:text-white transition-colors">
+                          {item.name}
+                        </h3>
+                        <p className="text-base font-black text-white/50 font-display">
+                          {Number(item.price).toLocaleString()} ETB
+                        </p>
+                      </div>
+                      <p className="text-white/40 text-xs line-clamp-2 mb-4 flex-1">
+                        {item.description || 'No description available.'}
                       </p>
-                    </div>
-
-                    <p className="text-white/50 text-sm line-clamp-2 mb-6 flex-1">
-                      {item.description || 'No detailed technical documentation available for this asset.'}
-                    </p>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
-                      <div className="flex items-center gap-2 text-xs font-bold text-white/60 uppercase tracking-widest">
-                        <Tag className="w-3 h-3" />
-                        {item.category}
-                      </div>
-                      <div className="text-[10px] text-white/40 font-medium">
-                        Added {formatDate(item.createdAt).split(',')[0]}
+                      <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">{item.category}</span>
+                        <span className="text-[10px] text-white/20">{formatDate(item.createdAt).split(',')[0]}</span>
                       </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                ) : (
+                  /* List View */
+                  <Card className="p-3 group hover:border-primary/30 transition-all">
+                    <div className="flex items-center gap-4">
+                      <div className="relative h-16 w-16 rounded-xl overflow-hidden bg-neutral-50 flex-shrink-0">
+                        {item.imageUrl ? (
+                          <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center"><Package className="w-6 h-6 opacity-10" /></div>
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-4">
+                          <div>
+                            <h3 className="font-bold text-white group-hover:text-primary transition-colors truncate">{item.name}</h3>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge variant="default" className="bg-white/5 text-white/40 border-none px-2 py-0">
+                                {item.category}
+                              </Badge>
+                              <span className="text-xs text-white/30">{formatCurrency(item.price)} ETB</span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-8">
+                             <div className="text-right hidden sm:block">
+                                <p className="text-xs font-bold text-white/30 uppercase tracking-widest">In Stock</p>
+                                <p className={`text-lg font-black font-display ${item.stock > 10 ? 'text-green-400' : item.stock > 0 ? 'text-orange-400' : 'text-red-400'}`}>
+                                  {item.stock}
+                                </p>
+                             </div>
+                             
+                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                <Button variant="ghost" size="sm" onClick={() => setEditingItem(item)} className="h-8 w-8 p-0">
+                                  <Edit2 className="w-4 h-4" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => setDeletingItemId(item.id)} className="h-8 w-8 p-0 text-red-400 hover:bg-red-400/10">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                )}
               </motion.div>
             ))}
           </AnimatePresence>
