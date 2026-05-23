@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { inventoryItems, NewInventoryItem } from '@/db/schema';
+import { inventoryItems, NewInventoryItem, stockTransactions } from '@/db/schema';
 import { uploadImage } from '@/lib/cloudinary';
 import { createItemSchema, validateImageFile } from '@/lib/validation';
 import { retryAsync } from '@/lib/utils';
@@ -126,7 +126,20 @@ export async function POST(request: Request) {
     };
 
     const [createdItem] = await retryAsync(
-      () => db.insert(inventoryItems).values(newItem).returning(),
+      async () => {
+        const [created] = await db.insert(inventoryItems).values(newItem).returning();
+
+        if (created && created.stock > 0) {
+          await db.insert(stockTransactions).values({
+            itemId: created.id,
+            itemName: created.name,
+            quantity: created.stock,
+            type: 'IN',
+          });
+        }
+
+        return [created];
+      },
       3,
       1000
     );

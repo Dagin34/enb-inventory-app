@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { inventoryItems, NewInventoryItem } from '@/db/schema';
+import { inventoryItems, NewInventoryItem, stockTransactions } from '@/db/schema';
 import { uploadImage, deleteImage } from '@/lib/cloudinary';
 import { createItemSchema, validateImageFile } from '@/lib/validation';
 import { retryAsync } from '@/lib/utils';
@@ -136,12 +136,25 @@ export async function PUT(
     };
 
     const [updatedItem] = await retryAsync(
-      () =>
-        db
+      async () => {
+        const [updated] = await db
           .update(inventoryItems)
           .set(updatedData)
           .where(eq(inventoryItems.id, id))
-          .returning(),
+          .returning();
+
+        if (updated && updated.stock !== existingItem.stock) {
+          const stockDiff = updated.stock - existingItem.stock;
+          await db.insert(stockTransactions).values({
+            itemId: id,
+            itemName: updated.name,
+            quantity: Math.abs(stockDiff),
+            type: stockDiff > 0 ? 'IN' : 'OUT',
+          });
+        }
+
+        return [updated];
+      },
       3,
       1000
     );
