@@ -93,7 +93,7 @@ export function StockModals({ items, isOpenIn, isOpenOut, onCloseIn, onCloseOut 
       <Modal 
         isOpen={isOpenIn} 
         onClose={onCloseIn} 
-        title="Stock Reception"
+        title="Stock Procurement"
         size="lg"
       >
         <div className="space-y-6">
@@ -115,9 +115,9 @@ export function StockModals({ items, isOpenIn, isOpenOut, onCloseIn, onCloseOut 
           {stockInMode === 'existing' ? (
             <div className="space-y-4">
               <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input 
-                  placeholder="Identify resource..."
+                  placeholder="Search for products..."
                   className="w-full pl-11 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-2xl focus:ring-2 focus:ring-primary/10 transition-all outline-none"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -153,7 +153,7 @@ export function StockModals({ items, isOpenIn, isOpenOut, onCloseIn, onCloseOut 
                   onClick={() => handleStockAction('IN')}
                   isLoading={isSubmitting}
                 >
-                  Confirm Inbound Logic
+                  Submit
                 </Button>
               </div>
             </div>
@@ -171,12 +171,12 @@ export function StockModals({ items, isOpenIn, isOpenOut, onCloseIn, onCloseOut 
         size="lg"
       >
         <div className="space-y-6">
-          <p className="text-neutral-500 text-sm">Select an existing asset to authorize stock removal.</p>
+          <p className="text-neutral-500 text-sm">Select an existing item to authorize stock removal.</p>
           
           <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
             <input 
-              placeholder="Locate asset..."
+              placeholder="Search for product..."
               className="w-full pl-11 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-2xl focus:ring-2 focus:ring-primary/10 transition-all outline-none"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -213,7 +213,7 @@ export function StockModals({ items, isOpenIn, isOpenOut, onCloseIn, onCloseOut 
               onClick={() => handleStockAction('OUT')}
               isLoading={isSubmitting}
             >
-              Authorize Outbound Removal
+              Submit
             </Button>
           </div>
         </div>

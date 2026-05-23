@@ -182,7 +182,7 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="relative group flex-1 md:flex-none">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 group-focus-within:text-primary transition-colors" />
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 group-focus-within:text-primary transition-colors" />
               <input
                 type="text"
                 placeholder="Search products..."
@@ -293,16 +293,16 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                         </Badge>
                       </div>
 
-                      <div className="absolute top-3 right-3 flex gap-2 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
+                      <div className="absolute top-3 right-3 flex gap-2 -translate-y-2.5 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
                         <button
                           onClick={() => setEditingItem(item)}
-                          className="p-1.5 bg-white/90 backdrop-blur shadow-sm rounded-lg hover:bg-white text-primary transition-colors"
+                          className="p-3 bg-white/50 hover:bg-primary text-primary hover:text-secondary border-2 border-primary backdrop-blur shadow-sm rounded-xl transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeletingItemId(item.id)}
-                          className="p-1.5 bg-white/90 backdrop-blur shadow-sm rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+                          className="p-3 bg-white/50 hover:bg-red-600 text-primary hover:text-secondary border-2 border-primary backdrop-blur shadow-sm rounded-xl transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -322,7 +322,7 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                         {item.description || 'No description available.'}
                       </p>
                       <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">{item.category}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest bg-white/10 py-1 px-2 rounded-full text-white/30">{item.category}</span>
                         <span className="text-[10px] text-white/20">{formatDate(item.createdAt).split(',')[0]}</span>
                       </div>
                     </div>
@@ -342,7 +342,7 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-4">
                           <div>
-                            <h3 className="font-bold text-white group-hover:text-primary transition-colors truncate">{item.name}</h3>
+                            <h3 className="font-bold text-white/70 group-hover:text-white transition-colors truncate">{item.name}</h3>
                             <div className="flex items-center gap-2 mt-1">
                               <Badge variant="default" className="bg-white/5 text-white/40 border-none px-2 py-0">
                                 {item.category}
@@ -360,10 +360,10 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                              </div>
                              
                              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                <Button variant="ghost" size="sm" onClick={() => setEditingItem(item)} className="h-8 w-8 p-0">
+                                <Button variant="ghost" size="sm" onClick={() => setEditingItem(item)} className="h-10 w-10 p-0 bg-white/50 hover:bg-white text-primary hover:text-primary border-2 border-primary">
                                   <Edit2 className="w-4 h-4" />
                                 </Button>
-                                <Button variant="ghost" size="sm" onClick={() => setDeletingItemId(item.id)} className="h-8 w-8 p-0 text-red-400 hover:bg-red-400/10">
+                                <Button variant="ghost" size="sm" onClick={() => setDeletingItemId(item.id)} className="h-10 w-10 p-0 bg-white/50 hover:bg-red-600 text-primary hover:text-secondary border-2 border-primary">
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
                              </div>

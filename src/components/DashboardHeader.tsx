@@ -23,21 +23,21 @@ export function DashboardHeader({ items }: DashboardHeaderProps) {
             <span className="text-primary/40">Management.</span>
           </h1>
           <p className="text-lg text-neutral-500">
-            Precision asset management for elite production environments.
+            The best inventory management app for production environments.
           </p>
         </div>
         
         <div className="flex items-center gap-3">
           <Button 
             onClick={() => setIsStockInOpen(true)}
-            className="h-14 px-8 bg-primary rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all text-lg font-bold"
+            className="h-14 px-4 lg:px-8 bg-primary rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all text-lg font-bold"
           >
             <ArrowDownLeft className="w-6 h-6 mr-2" /> Stock In
           </Button>
           <Button 
             variant="danger"
             onClick={() => setIsStockOutOpen(true)}
-            className="h-14 px-8 rounded-2xl shadow-xl shadow-red-600/20 hover:scale-105 transition-all text-lg font-bold"
+            className="h-14 px-4 lg:px-8 rounded-2xl shadow-xl shadow-red-600/20 hover:scale-105 transition-all text-lg font-bold"
           >
             <ArrowUpRight className="w-6 h-6 mr-2" /> Stock Out
           </Button>
