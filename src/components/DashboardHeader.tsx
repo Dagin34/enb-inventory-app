@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Minus, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Plus, Minus, ArrowUpRight, ArrowDownLeft, History } from 'lucide-react';
 import { Button } from './ui';
 import { StockModals } from './StockModals';
+import { TransactionHistoryModal } from './TransactionHistoryModal';
 import { InventoryItem } from '@/db/schema';
 
 interface DashboardHeaderProps {
@@ -13,6 +14,7 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ items }: DashboardHeaderProps) {
   const [isStockInOpen, setIsStockInOpen] = useState(false);
   const [isStockOutOpen, setIsStockOutOpen] = useState(false);
+  const [isTransactionOpen, setIsTransactionOpen] = useState(false);
 
   return (
     <>
@@ -41,6 +43,14 @@ export function DashboardHeader({ items }: DashboardHeaderProps) {
           >
             <ArrowUpRight className="w-6 h-6 mr-2" /> Stock Out
           </Button>
+          <Button 
+            variant="secondary"
+            onClick={() => setIsTransactionOpen(true)}
+            className="h-14 w-14 p-0 rounded-2xl shadow-xl hover:scale-105 transition-all bg-white hover:bg-neutral-50 text-primary border border-neutral-200 flex items-center justify-center"
+            title="Transaction Audit Log"
+          >
+            <History className="w-6 h-6" />
+          </Button>
         </div>
       </header>
 
@@ -50,6 +60,11 @@ export function DashboardHeader({ items }: DashboardHeaderProps) {
         isOpenOut={isStockOutOpen}
         onCloseIn={() => setIsStockInOpen(false)}
         onCloseOut={() => setIsStockOutOpen(false)}
+      />
+
+      <TransactionHistoryModal 
+        isOpen={isTransactionOpen}
+        onClose={() => setIsTransactionOpen(false)}
       />
     </>
   );

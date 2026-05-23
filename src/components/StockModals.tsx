@@ -81,7 +81,7 @@ export function StockModals({ items, isOpenIn, isOpenOut, onCloseIn, onCloseOut 
       setAmount('');
       setSearchQuery('');
     } catch (error) {
-      toast.error('System synchronization failed');
+      toast.error('Oops! Something went wrong! Please, try again later!');
     } finally {
       setIsSubmitting(false);
     }
