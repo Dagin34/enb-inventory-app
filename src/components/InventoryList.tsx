@@ -43,7 +43,7 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
   const router = useRouter();
 
   const [items, setItems] = useState(initialItems);
-  
+
   // Sync state with initialItems when server-side data changes (e.g., after router.refresh())
   useEffect(() => {
     setItems(initialItems);
@@ -176,7 +176,7 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* Search and Category Toggle */}
       <div className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -188,19 +188,19 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-11 pr-6 py-3 bg-white border border-neutral-200 rounded-2xl w-full md:w-96 focus:ring-2 focus:ring-primary/10 transition-all shadow-sm outline-none"
+                className="text-sm pl-11 pr-6 py-3 bg-white border border-neutral-200 rounded-2xl w-full md:w-96 focus:ring-2 focus:ring-primary/10 transition-all shadow-sm outline-none"
               />
             </div>
-            
+
             {/* View Toggle */}
             <div className="flex bg-white border border-neutral-200 rounded-2xl p-1 shadow-sm">
-              <button 
+              <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-primary text-white' : 'text-neutral-400 hover:text-primary'}`}
               >
                 <LayoutGrid className="w-5 h-5" />
               </button>
-              <button 
+              <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-xl transition-all ${viewMode === 'list' ? 'bg-primary text-white' : 'text-neutral-400 hover:text-primary'}`}
               >
@@ -214,9 +214,9 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
               <button
                 key={opt.value}
                 onClick={() => setSelectedCategory(opt.value)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap shadow-sm border ${selectedCategory === opt.value
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-white text-neutral-500 border-neutral-100 hover:border-neutral-300'
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shadow-sm border ${selectedCategory === opt.value
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-neutral-500 border-neutral-100 hover:border-neutral-300'
                   }`}
               >
                 {opt.label}
@@ -257,7 +257,7 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
       ) : (
         <motion.div
           layout
-          className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}
+          className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2" : "space-y-1"}
         >
           <AnimatePresence mode="popLayout">
             {filteredItems.map((item) => (
@@ -270,9 +270,9 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               >
                 {viewMode === 'grid' ? (
-                  <Card className="p-0 overflow-hidden flex flex-col group h-full">
+                  <Card className="p-0! hover:border-3! overflow-hidden flex flex-col group h-full">
                     {/* Image Container */}
-                    <div className="relative h-48 overflow-hidden bg-neutral-50">
+                    <div className="relative h-32 overflow-hidden bg-neutral-50">
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
@@ -309,9 +309,9 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                       </div>
                     </div>
 
-                    <div className="p-5 flex flex-col flex-1">
+                    <div className="p-4 flex flex-col flex-1">
                       <div className="flex justify-between items-start mb-1">
-                        <h3 className="text-lg font-bold font-display text-white/90 line-clamp-1 group-hover:text-white transition-colors">
+                        <h3 className="text-lg font-bold font-display text-white/80 line-clamp-1 group-hover:text-white transition-colors">
                           {item.name}
                         </h3>
                         <p className="text-base font-black text-white/50 font-display">
@@ -329,47 +329,69 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                   </Card>
                 ) : (
                   /* List View */
-                  <Card className="p-3 group hover:border-primary/30 transition-all">
-                    <div className="flex items-center gap-4">
-                      <div className="relative h-16 w-16 rounded-xl overflow-hidden bg-neutral-50 flex-shrink-0">
-                        {item.imageUrl ? (
-                          <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center"><Package className="w-6 h-6 opacity-10" /></div>
-                        )}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-4">
-                          <div>
-                            <h3 className="font-bold text-white/70 group-hover:text-white transition-colors truncate">{item.name}</h3>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="default" className="bg-white/5 text-white/40 border-none px-2 py-0">
-                                {item.category}
-                              </Badge>
-                              <span className="text-xs text-white/30">{formatCurrency(item.price)} ETB</span>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-8">
-                             <div className="text-right hidden sm:block">
-                                <p className="text-xs font-bold text-white/30 uppercase tracking-widest">In Stock</p>
-                                <p className={`text-lg font-black font-display ${item.stock > 10 ? 'text-green-400' : item.stock > 0 ? 'text-orange-400' : 'text-red-400'}`}>
-                                  {item.stock}
+                  <Card className="p-1! bg-white/75! translate-y-0! hover:bg-white/90! group hover:border-primary/30 transition-all overflow-hidden">
+                    <div className="flex items-stretch gap-4"> 
+                      <div className="flex flex-1 items-center gap-4 py-0">
+                        <div className="relative h-24 w-24 rounded-xl overflow-hidden border border-primary bg-neutral-50 shrink-0">
+                          {item.imageUrl ? (
+                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center"><Package className="w-6 h-6 opacity-10" /></div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-4">
+                            <div>
+                              <div className='flex justify-between gap-5 items-center'>
+                                <h3 className="font-bold text-primary/70 group-hover:text-primary transition-colors truncate">{item.name}</h3>
+                                <div className='h-4 w-0 border border-primary/30'></div>
+                                <p className="text-primary/40 text-xs line-clamp-1">
+                                  {item.description || 'No description available.'}
                                 </p>
-                             </div>
-                             
-                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                <Button variant="ghost" size="sm" onClick={() => setEditingItem(item)} className="h-10 w-10 p-0 bg-white/50 hover:bg-white text-primary hover:text-primary border-2 border-primary">
-                                  <Edit2 className="w-4 h-4" />
-                                </Button>
-                                <Button variant="ghost" size="sm" onClick={() => setDeletingItemId(item.id)} className="h-10 w-10 p-0 bg-white/50 hover:bg-red-600 text-primary hover:text-secondary border-2 border-primary">
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                             </div>
+                              </div>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="default" className="bg-primary/5 text-primary/40 border-none px-2 py-0">
+                                  {item.category}
+                                </Badge>
+                                <span className="text-xs text-primary/30">{formatCurrency(item.price)} ETB</span>
+                              </div>
+                            </div>
+
+                            <div className="text-right hidden sm:block mr-4">
+                              <p className="text-xs font-bold text-primary/30 uppercase tracking-widest">In Stock</p>
+                              <p className={`text-lg font-black font-display ${item.stock > 10 ? 'text-green-400' : item.stock > 0 ? 'text-orange-400' : 'text-red-400'}`}>
+                                {item.stock}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
+
+                      <div className="flex items-stretch  transition-all duration-200">
+                        <div className="w-px bg-neutral-100 self-stretch my-1" />
+                        
+                        <div className="flex flex-col h-full w-14 shrink-0">
+                          <button 
+                            type="button"
+                            onClick={() => setEditingItem(item)} 
+                            className="rounded-xl flex-1 flex items-center justify-center w-full bg-transparent hover:bg-primary text-neutral-500 hover:text-white transition-colors duration-150 border-b border-neutral-100"
+                            title="Edit Item"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          
+                          <button 
+                            type="button"
+                            onClick={() => setDeletingItemId(item.id)} 
+                            className="rounded-xl flex-1 flex items-center justify-center w-full bg-transparent hover:bg-red-600 text-neutral-500 hover:text-white transition-colors duration-150"
+                            title="Delete Item"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
                     </div>
                   </Card>
                 )}
