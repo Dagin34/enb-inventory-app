@@ -28,7 +28,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen flex bg-[#F4F9E9]">
       <main className="flex-1 px-2 py-4 lg:p-8 overflow-x-hidden">
-        <div className="max-w-full mx-auto space-y-4 px-6 lg:px-24">
+        <div className="max-w-full mx-auto space-y-4 px-2 lg:px-24">
           
           {/* Client Header with Modals */}
           <DashboardHeader items={items} />
