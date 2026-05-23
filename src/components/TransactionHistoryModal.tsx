@@ -58,11 +58,11 @@ export function TransactionHistoryModal({ isOpen, onClose }: TransactionHistoryM
         setTotalCount(data.pagination?.totalCount || 0);
 
         if (showToast) {
-          toast.success('Audit logs synchronized');
+          toast.success('Stock Transactions Refreshed!');
         }
       } catch (error) {
         console.error('Fetch transactions error:', error);
-        toast.error('Failed to retrieve audit log');
+        toast.error('Failed to retrieve stock transactions');
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
