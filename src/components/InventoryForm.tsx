@@ -193,7 +193,7 @@ export default function InventoryForm({
   }));
 
   return (
-    <Card className="p-0! w-1/2 mx-auto overflow-hidden border border-white/20 shadow-[0_20px_80px_rgba(0,0,0,0.08)] bg-white/90! backdrop-blur-2xl rounded-4xl">
+    <Card className="p-0! overflow-hidden border border-white/20 shadow-[0_20px_80px_rgba(0,0,0,0.08)] bg-white/90! backdrop-blur-2xl rounded-4xl">
       <form onSubmit={handleSubmit} className="flex flex-col relative">
 
         {/* Header */}

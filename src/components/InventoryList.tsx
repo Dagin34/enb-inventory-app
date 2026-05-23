@@ -330,37 +330,37 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                 ) : (
                   /* List View */
                   <Card className="p-1! bg-white/75! translate-y-0! hover:bg-white/90! group hover:border-primary/30 transition-all overflow-hidden">
-                    <div className="flex items-stretch gap-4"> 
-                      <div className="flex flex-1 items-center gap-4 py-0">
-                        <div className="relative h-24 w-24 rounded-xl overflow-hidden border border-primary bg-neutral-50 shrink-0">
+                    <div className="flex flex-col sm:flex-row items-stretch gap-3 sm:gap-4"> 
+                      <div className="flex flex-1 items-center gap-4 py-1 sm:py-0 px-2 sm:px-0">
+                        <div className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-xl overflow-hidden border border-primary/20 bg-neutral-50 shrink-0">
                           {item.imageUrl ? (
                             <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center"><Package className="w-6 h-6 opacity-10" /></div>
+                            <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 sm:w-6 sm:h-6 opacity-10" /></div>
                           )}
                         </div>
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-4">
                             <div>
-                              <div className='flex justify-between gap-5 items-center'>
-                                <h3 className="font-bold text-primary/70 group-hover:text-primary transition-colors truncate">{item.name}</h3>
-                                <div className='h-4 w-0 border border-primary/30'></div>
-                                <p className="text-primary/40 text-xs line-clamp-1">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5">
+                                <h3 className="font-bold text-sm sm:text-base text-primary/70 group-hover:text-primary transition-colors truncate">{item.name}</h3>
+                                <div className="hidden sm:block h-4 w-0 border border-primary/30"></div>
+                                <p className="text-primary/40 text-xs line-clamp-1 max-w-xs">
                                   {item.description || 'No description available.'}
                                 </p>
                               </div>
                               <div className="flex items-center gap-2 mt-1">
-                                <Badge variant="default" className="bg-primary/5 text-primary/40 border-none px-2 py-0">
+                                <Badge variant="default" className="bg-primary/5 text-primary/40 border-none px-2 py-0 text-[10px] sm:text-xs">
                                   {item.category}
                                 </Badge>
                                 <span className="text-xs text-primary/30">{formatCurrency(item.price)} ETB</span>
                               </div>
                             </div>
 
-                            <div className="text-right hidden sm:block mr-4">
-                              <p className="text-xs font-bold text-primary/30 uppercase tracking-widest">In Stock</p>
-                              <p className={`text-lg font-black font-display ${item.stock > 10 ? 'text-green-400' : item.stock > 0 ? 'text-orange-400' : 'text-red-400'}`}>
+                            <div className="text-right mr-2 sm:mr-4">
+                              <p className="text-[10px] sm:text-xs font-bold text-primary/30 uppercase tracking-widest">Stock</p>
+                              <p className={`text-sm sm:text-lg font-black font-display ${item.stock > 10 ? 'text-green-400' : item.stock > 0 ? 'text-orange-400' : 'text-red-400'}`}>
                                 {item.stock}
                               </p>
                             </div>
@@ -368,9 +368,9 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                         </div>
                       </div>
 
-                      <div className="flex items-stretch  transition-all duration-200">
+                      {/* Desktop View */}
+                      <div className="hidden sm:flex items-stretch transition-all duration-200">
                         <div className="w-px bg-neutral-100 self-stretch my-1" />
-                        
                         <div className="flex flex-col h-full w-14 shrink-0">
                           <button 
                             type="button"
@@ -380,7 +380,6 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          
                           <button 
                             type="button"
                             onClick={() => setDeletingItemId(item.id)} 
@@ -390,6 +389,26 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
+                      </div>
+
+                      {/* Mobile View */}
+                      <div className="flex sm:hidden border-t border-neutral-50 bg-neutral-50/40 w-full distribution">
+                        <button
+                          type="button"
+                          onClick={() => setEditingItem(item)}
+                          className="flex-1 py-2.5 flex items-center justify-center gap-2 text-xs font-bold text-neutral-500 active:bg-primary/5 active:text-primary transition-colors border-r border-neutral-100/60"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeletingItemId(item.id)}
+                          className="flex-1 py-2.5 flex items-center justify-center gap-2 text-xs font-bold text-neutral-500 active:bg-red-50 active:text-red-600 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Delete</span>
+                        </button>
                       </div>
 
                     </div>
