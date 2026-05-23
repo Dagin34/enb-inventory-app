@@ -15,6 +15,13 @@
       "when": 1779449708123,
       "tag": "0001_good_pepper_potts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779525872219,
+      "tag": "0002_orange_squadron_sinister",
+      "breakpoints": true
     }
   ]
 }

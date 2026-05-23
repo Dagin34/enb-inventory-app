@@ -22,3 +22,22 @@ export const inventoryItems = pgTable(
 
 export type InventoryItem = typeof inventoryItems.$inferSelect;
 export type NewInventoryItem = typeof inventoryItems.$inferInsert;
+
+export const stockTransactions = pgTable(
+  'stock_transactions',
+  {
+    id: serial('id').primaryKey(),
+    itemId: integer('item_id').references(() => inventoryItems.id, { onDelete: 'set null' }),
+    itemName: varchar('item_name', { length: 255 }).notNull(),
+    quantity: integer('quantity').notNull(),
+    type: varchar('type', { length: 10 }).notNull(), // 'IN' or 'OUT'
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index('idx_transaction_item_id').on(table.itemId),
+    index('idx_transaction_created_at').on(table.createdAt),
+  ]
+);
+
+export type StockTransaction = typeof stockTransactions.$inferSelect;
+export type NewStockTransaction = typeof stockTransactions.$inferInsert;
