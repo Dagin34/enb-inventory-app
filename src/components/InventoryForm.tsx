@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, Loader2, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Upload, X, Loader2, Image as ImageIcon, Sparkles, ChevronDown, Package } from 'lucide-react';
 import { Button, Input, Textarea, Select, Card, Spinner, Badge } from './ui';
 import { CATEGORIES, validateImageFile } from '@/lib/validation';
 import { fetchApiWithFormData } from '@/lib/utils';
@@ -173,8 +173,8 @@ export default function InventoryForm({
       });
       setImageFile(null);
       setImagePreview(null);
-      
-      
+
+
       if (onSuccess) onSuccess();
       startTransition(() => {
         router.refresh();
@@ -193,128 +193,228 @@ export default function InventoryForm({
   }));
 
   return (
-    <Card className="p-0 overflow-hidden border-none shadow-2xl glass-panel bg-white/90!">
-      <form onSubmit={handleSubmit} className="flex flex-col">
-        {/* Visual Header */}
-        <div className="bg-primary p-8 text-white relative overflow-hidden">
+    <Card className="p-0! w-1/2 mx-auto overflow-hidden border border-white/20 shadow-[0_20px_80px_rgba(0,0,0,0.08)] bg-white/90! backdrop-blur-2xl rounded-4xl">
+      <form onSubmit={handleSubmit} className="flex flex-col relative">
+
+        {/* Header */}
+        <div className="bg-primary px-7 py-6 text-white relative overflow-hidden border-b border-white/10">
           <div className="relative z-10">
-            <h3 className="text-3xl font-black font-display tracking-tight">
-              {initialData ? 'Modify Asset' : 'Insert Asset'}
-            </h3>
-            <p className="opacity-60 text-sm mt-1 ">
-              {initialData ? 'Updating the items in the inventory management system.' : 'Registering new items into the inventory management system.'}
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
+                <Package className="w-5 h-5" />
+              </div>
+
+              <div>
+                <h3 className="text-xl font-black font-display tracking-tight leading-none">
+                  {initialData ? 'Modify Asset' : 'Insert Asset'}
+                </h3>
+
+                <p className="opacity-70 text-xs mt-2 max-w-sm leading-relaxed">
+                  {initialData
+                    ? 'Updating the items in the inventory management system.'
+                    : 'Registering new items into the inventory management system.'}
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-12 -mt-12 blur-3xl" />
+
+          {/* Ambient Effects */}
+          <div className="absolute top-0 right-0 w-56 h-56 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/10 rounded-full blur-2xl -mb-10 -ml-10" />
         </div>
 
-        <div className="p-8 space-y-8">
-          {/* Image Uploader */}
-          <div className="space-y-3">
-             <label className="text-xs font-black uppercase tracking-widest text-neutral-400 ml-1">Image</label>
-             <div 
-               onClick={() => fileInputRef.current?.click()}
-               className={`relative h-48 w-full rounded-4xl border-2 border-dashed transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center gap-4 ${
-                 imagePreview ? 'border-primary' : 'border-neutral-200 hover:border-primary/50 hover:bg-primary/5'
-               }`}
-             >
-                {imagePreview ? (
-                  <>
-                    <Image src={imagePreview} alt="Preview" fill className="object-cover" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                       <Button variant="danger" size="sm" onClick={handleRemoveImage}>
-                         <X className="w-4 h-4 mr-2" /> Replace
-                       </Button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-12 h-12 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400">
-                      <ImageIcon className="w-6 h-6" />
-                    </div>
-                    <div className="text-center">
-                       <p className="text-sm font-bold text-primary">Upload Visual</p>
-                       <p className="text-xs text-neutral-400">Drag/Drop or Click</p>
-                    </div>
-                  </>
-                )}
-                <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
-             </div>
-          </div>
+        {/* Body */}
+        <div className="p-5 sm:p-6 space-y-2">
 
-          <div className="space-y-6">
-            <Input
-              label="Asset Name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="System-X Hybrid"
-              error={errors.name}
-            />
+          {/* Image Section */}
+          <div className="space-y-2">
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className={`relative h-52 w-full rounded-4xl border-2 border-dashed transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center gap-4 group ${imagePreview
+                ? 'border-primary shadow-lg shadow-primary/10'
+                : 'border-neutral-200 hover:border-primary/40 hover:bg-primary/3'
+                }`}
+            >
+              {imagePreview ? (
+                <>
+                  <Image
+                    src={imagePreview}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
+                  />
 
-            <div className="grid grid-cols-2 gap-4">
-               <Select
-                label="Category"
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                options={categoryOptions}
-              />
-               <Input
-                label="Value (ETB)"
-                name="price"
-                type="number"
-                step="0.01"
-                value={formData.price}
-                onChange={handleChange}
-                placeholder="0.00"
-                error={errors.price}
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center backdrop-blur-[2px]">
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="px-5 py-2.5 rounded-2xl bg-white text-primary font-semibold text-sm hover:scale-[1.03] active:scale-100 transition-all shadow-xl"
+                    >
+                      Replace Image
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 rounded-3xl bg-neutral-100 flex items-center justify-center text-neutral-400 group-hover:bg-primary/10 group-hover:text-primary transition-all">
+                    <ImageIcon className="w-7 h-7" />
+                  </div>
+
+                  <div className="text-center">
+                    <p className="text-sm font-bold text-primary tracking-tight">
+                      Upload Visual
+                    </p>
+
+                    <p className="text-xs text-neutral-400 mt-1">
+                      Drag & drop or click to browse
+                    </p>
+                  </div>
+                </>
+              )}
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                accept="image/*"
+                className="hidden"
               />
             </div>
-
-            <Input
-              label="Stock Amount (Pcs)"
-              name="stock"
-              type="number"
-              value={formData.stock}
-              onChange={handleChange}
-              placeholder="0"
-              error={errors.stock}
-            />
-
-            <Textarea
-              label="Product Description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Full documentation and logs..."
-              error={errors.description}
-            />
           </div>
 
-          {/* Action Footer */}
-          <div className="pt-6 border-t border-neutral-100 flex gap-3">
-             {onCancel && (
-               <Button type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting} className="flex-1">
-                 Cancel
-               </Button>
-             )}
-             <Button type="submit" isLoading={isSubmitting} disabled={isSubmitting} className="flex-1">
-                {initialData ? 'Save & Update' : 'Submit'}
-             </Button>
+          {/* Inputs */}
+          <div className="space-y-2">
+
+            {/* Name */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
+                <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="System-X Hybrid"
+                  className="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-5 text-xs font-medium outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10"
+                />
+
+                {errors.name && (
+                  <p className="text-xs text-red-500 ml-1">{errors.name}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <div className="relative">
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="appearance-none h-12 w-full rounded-2xl border border-neutral-200 bg-white px-5 pr-12 text-xs font-medium outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10"
+                  >
+                    {categoryOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/40 pointer-events-none" />
+                </div>
+              </div>
+            </div>
+
+            {/* Category + Price */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
+                <input
+                  name="price"
+                  type="number"
+                  step="0.01"
+                  value={formData.price}
+                  onChange={handleChange}
+                  placeholder="0.00"
+                  className="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-5 text-xs font-medium outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10"
+                />
+
+                {errors.price && (
+                  <p className="text-xs text-red-500 ml-1">{errors.price}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <input
+                  name="stock"
+                  type="number"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  placeholder="0"
+                  className="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-5 text-xs font-medium outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10"
+                />
+
+                {errors.stock && (
+                  <p className="text-xs text-red-500 ml-1">{errors.stock}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Full documentation and logs..."
+                rows={5}
+                className="w-full rounded-3xl border border-neutral-200 bg-white px-5 py-4 text-xs font-medium resize-none outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10"
+              />
+
+              {errors.description && (
+                <p className="text-xs text-red-500 ml-1">
+                  {errors.description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex gap-3">
+            {onCancel && (
+              <button
+                type="button"
+                onClick={onCancel}
+                disabled={isSubmitting}
+                className="text-sm flex-1 h-12 rounded-2xl border border-neutral-200 bg-white text-primary font-semibold hover:bg-neutral-50 transition-all"
+              >
+                Cancel
+              </button>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="text-sm flex-1 h-12 rounded-2xl bg-primary text-white font-semibold shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-60"
+            >
+              {isSubmitting
+                ? 'Processing...'
+                : initialData
+                  ? 'Save & Update'
+                  : 'Submit'}
+            </button>
           </div>
         </div>
 
-        {/* Dynamic Progress Loader */}
+        {/* Progress */}
         <AnimatePresence>
           {isSubmitting && (
-            <motion.div 
-              initial={{ height: 0 }}
-              animate={{ height: 4 }}
-              exit={{ height: 0 }}
-              className="bg-green-500 w-full"
-              style={{ width: `${uploadProgress}%` }}
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="absolute bottom-0 left-0 w-full h-1.5 bg-neutral-100 overflow-hidden"
+            >
+              <motion.div
+                className="h-full bg-linear-to-r from-primary via-primary/80 to-green-400 rounded-r-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${uploadProgress}%` }}
+                transition={{ ease: 'easeOut' }}
+              />
+            </motion.div>
           )}
         </AnimatePresence>
       </form>

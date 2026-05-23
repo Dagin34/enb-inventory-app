@@ -152,19 +152,19 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="space-y-8"
+        className="space-y-4"
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             onClick={handleCancelEdit}
-            className="group"
+            className="group text-sm"
           >
             <ArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
             Back to Collection
           </Button>
-          <div className="h-4 w-px bg-neutral-200" />
-          <h2 className="text-xl font-bold font-display text-primary">Editing {editingItem.name}</h2>
+          <div className="h-4 w-px bg-primary/70" />
+          <h2 className="ml-4 text-sm font-bold font-display text-primary">Editing {editingItem.name}</h2>
         </div>
         <InventoryForm
           initialData={editingItem}
@@ -404,10 +404,10 @@ export default function InventoryList({ initialItems }: InventoryListProps) {
       {/* Delete Confirmation */}
       <ConfirmDialog
         isOpen={deletingItemId !== null}
-        title="Evict Asset?"
-        message="Are you sure you want to permanently remove this asset from the ecosystem? This protocol cannot be reversed."
-        confirmText="Confirm Eviction"
-        cancelText="Keep Asset"
+        title="Remove Item?"
+        message="Are you sure you want to permanently remove this item from the system? This deletion cannot be reversed."
+        confirmText="Confirm Deletion"
+        cancelText="Keep Item"
         isDangerous
         isLoading={isDeletingLoading}
         onConfirm={() => {
