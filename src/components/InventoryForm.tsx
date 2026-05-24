@@ -285,14 +285,14 @@ export default function InventoryForm({
           {/* Inputs */}
           <div className="space-y-2">
 
-            {/* Name */}
+            {/* Name and Category */}
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-2">
                 <input
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="System-X Hybrid"
+                  placeholder="Product Name"
                   className="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-5 text-xs font-medium outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10"
                 />
 
@@ -320,7 +320,7 @@ export default function InventoryForm({
               </div>
             </div>
 
-            {/* Category + Price */}
+            {/* Price and Stock */}
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-2">
                 <input
@@ -329,7 +329,7 @@ export default function InventoryForm({
                   step="0.01"
                   value={formData.price}
                   onChange={handleChange}
-                  placeholder="0.00"
+                  placeholder="Product Price"
                   className="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-5 text-xs font-medium outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10"
                 />
 
@@ -343,7 +343,7 @@ export default function InventoryForm({
                   type="number"
                   value={formData.stock}
                   onChange={handleChange}
-                  placeholder="0"
+                  placeholder="Stock Quantity"
                   className="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-5 text-xs font-medium outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10"
                 />
 
@@ -359,7 +359,7 @@ export default function InventoryForm({
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Full documentation and logs..."
+                placeholder="Full description..."
                 rows={5}
                 className="w-full rounded-3xl border border-neutral-200 bg-white px-5 py-4 text-xs font-medium resize-none outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10"
               />
